@@ -1,6 +1,5 @@
 package com.example.notepad;
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -9,9 +8,7 @@ public class Note {
 
     @PrimaryKey(autoGenerate = true) // set noteId as Primary key
     private int noteId;
-
     private String title, note;
-
 
     public int getNoteId() {
         return noteId;

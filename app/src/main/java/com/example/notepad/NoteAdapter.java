@@ -5,8 +5,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,6 +36,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         final Note note = noteList.get(position);
+
         holder.title.setText(note.getTitle());
         holder.note.setText(note.getNote());
 
@@ -61,7 +62,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public EditText title, note;
+        public TextView title, note;
         public ImageButton done;
 
         public MyViewHolder(View view) {
