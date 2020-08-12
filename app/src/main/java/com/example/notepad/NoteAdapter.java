@@ -106,14 +106,32 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
         DatabaseOperations databaseOperations = new DatabaseOperations(activity, mContext);
         NoteDAO noteDAO = databaseOperations.init();
         databaseOperations.updateNote(note);
-        updateData(noteDAO.getNotes());
+
+        loadNotes(noteDAO);
     }
 
     private void deleteNote(Note note) {
         DatabaseOperations databaseOperations = new DatabaseOperations(activity, mContext);
         NoteDAO noteDAO = databaseOperations.init();
         databaseOperations.deleteNote(note);
-        updateData(noteDAO.getNotes());
+
+        loadNotes(noteDAO);
+    }
+
+    private void loadNotes(NoteDAO noteDAO) {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                noteList = noteDAO.getNotes();
+                activity.runOnUiThread(new Runnable() { // Only the original thread that created a view hierarchy can touch its views
+                    @Override
+                    public void run() {
+                        notifyDataSetChanged();
+                    }
+                });
+            }
+        };
+        thread.start();
     }
 
     private void hideKeyboard() {

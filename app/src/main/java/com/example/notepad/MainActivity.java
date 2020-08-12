@@ -89,7 +89,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadNotes() {
-        adapter.updateData(noteDAO.getNotes());
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                adapter.updateData(noteDAO.getNotes());
+            }
+        };
+        thread.start();
     }
 
     private void hideKeyboard() {
