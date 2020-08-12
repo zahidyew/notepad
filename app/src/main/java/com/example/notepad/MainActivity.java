@@ -1,8 +1,10 @@
 package com.example.notepad;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,14 +17,13 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.example.notepad.db.DatabaseOperations;
-import com.example.notepad.db.NoteDAO;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private ConstraintLayout mainLayout;
-    private NoteDAO noteDAO;
     private NoteAdapter adapter;
     private FloatingActionButton floatingActionButton;
     private DatabaseOperations databaseOperations;
@@ -35,8 +36,7 @@ public class MainActivity extends AppCompatActivity {
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
 
-        databaseOperations = new DatabaseOperations(this, this);
-        noteDAO = databaseOperations.init();
+        databaseOperations = new DatabaseOperations(this);
 
         mainLayout = findViewById(R.id.main_activity);
         floatingActionButton = findViewById(R.id.floating_btn);
@@ -53,7 +53,15 @@ public class MainActivity extends AppCompatActivity {
             addNewNote();
         });
 
-        loadNotes();
+
+        // The onChanged() method fires when the observed data changes and the activity is in the foreground.
+        databaseOperations.getAllMyNotes().observe(this, new Observer<List<Note>>() {
+            @Override
+            public void onChanged(@Nullable final List<Note> notes) {
+                // Update the cached copy of the data in the adapter.
+                adapter.updateData(notes);
+            }
+        });
     }
 
     private void addNewNote() {
@@ -77,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
 
             mainLayout.removeView(makeNotePage);
             hideKeyboard();
-            loadNotes();
             floatingActionButton.show();
         });
 
@@ -88,16 +95,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void loadNotes() {
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                adapter.updateData(noteDAO.getNotes());
-            }
-        };
-        thread.start();
-    }
-
     private void hideKeyboard() {
         // Check if no view has focus:
         View view = this.getCurrentFocus();
@@ -106,6 +103,16 @@ public class MainActivity extends AppCompatActivity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
+    /*private void loadNotes() {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                adapter.updateData(noteDAO.getNotes());
+            }
+        };
+        thread.start();
+    }*/
 }
 
 

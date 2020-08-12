@@ -9,12 +9,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.notepad.db.DatabaseOperations;
-import com.example.notepad.db.NoteDAO;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
@@ -26,11 +26,11 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
     private ConstraintLayout mainLayout;
     private FloatingActionButton fab;
 
-    public NoteAdapter(Activity activity, Context mContext, List<Note> noteList) {
+    /*public NoteAdapter(Activity activity, Context mContext, List<Note> noteList) {
         this.activity = activity;
         this.mContext = mContext;
         this.noteList = noteList;
-    }
+    }*/
 
     public NoteAdapter(Activity activity, Context mContext, List<Note> noteList, ConstraintLayout mainLayout, FloatingActionButton fab) {
         this.activity = activity;
@@ -50,51 +50,57 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
-        Note note = noteList.get(position);
+        if (noteList == null) {
+            Toast.makeText(mContext, "Still empty. Add a note.", Toast.LENGTH_SHORT).show();
+        }else {
+            Note currentNote = noteList.get(position);
 
-        holder.title.setText(note.getTitle());
-        holder.note.setText(note.getNote());
+            holder.title.setText(currentNote.getTitle());
+            holder.note.setText(currentNote.getNote());
 
-        holder.deleteBtn.setOnClickListener(v -> {
-            deleteNote(note);
-        });
-
-        holder.editBtn.setOnClickListener(v -> {
-            LayoutInflater inflater = activity.getLayoutInflater();
-            View makeNotePage = inflater.inflate(R.layout.make_note_page, mainLayout, false);
-            mainLayout.addView(makeNotePage);
-            fab.hide();
-
-            ImageButton cancelBtn = makeNotePage.findViewById(R.id.cancel_button);
-            ImageButton doneBtn = makeNotePage.findViewById(R.id.button);
-
-            EditText writtenTitle = makeNotePage.findViewById(R.id.title);
-            EditText writtenNote = makeNotePage.findViewById(R.id.note);
-            writtenTitle.setText(note.getTitle());
-            writtenNote.setText(note.getNote());
-
-            doneBtn.setOnClickListener(v2 -> {
-                note.setTitle(writtenTitle.getText().toString());
-                note.setNote(writtenNote.getText().toString());
-
-                editNote(note);
-
-                mainLayout.removeView(makeNotePage);
-                hideKeyboard();
-                fab.show();
+            holder.deleteBtn.setOnClickListener(v -> {
+                deleteNote(currentNote);
             });
 
-            cancelBtn.setOnClickListener(v2 -> {
-                mainLayout.removeView(makeNotePage);
-                hideKeyboard();
-                fab.show();
+            holder.editBtn.setOnClickListener(v -> {
+                LayoutInflater inflater = activity.getLayoutInflater();
+                View makeNotePage = inflater.inflate(R.layout.make_note_page, mainLayout, false);
+                mainLayout.addView(makeNotePage);
+                fab.hide();
+
+                ImageButton cancelBtn = makeNotePage.findViewById(R.id.cancel_button);
+                ImageButton doneBtn = makeNotePage.findViewById(R.id.button);
+
+                EditText writtenTitle = makeNotePage.findViewById(R.id.title);
+                EditText writtenNote = makeNotePage.findViewById(R.id.note);
+                writtenTitle.setText(currentNote.getTitle());
+                writtenNote.setText(currentNote.getNote());
+
+                doneBtn.setOnClickListener(v2 -> {
+                    currentNote.setTitle(writtenTitle.getText().toString());
+                    currentNote.setNote(writtenNote.getText().toString());
+
+                    editNote(currentNote);
+
+                    mainLayout.removeView(makeNotePage);
+                    hideKeyboard();
+                    fab.show();
+                });
+
+                cancelBtn.setOnClickListener(v2 -> {
+                    mainLayout.removeView(makeNotePage);
+                    hideKeyboard();
+                    fab.show();
+                });
             });
-        });
+        }
     }
 
     @Override
     public int getItemCount() {
-        return noteList.size();
+        if (noteList != null) {
+            return noteList.size();
+        }else return 0;
     }
 
     public void updateData(List<Note> notes) {
@@ -103,35 +109,13 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
     }
 
     private void editNote(Note note) {
-        DatabaseOperations databaseOperations = new DatabaseOperations(activity, mContext);
-        NoteDAO noteDAO = databaseOperations.init();
+        DatabaseOperations databaseOperations = new DatabaseOperations(mContext);
         databaseOperations.updateNote(note);
-
-        loadNotes(noteDAO);
     }
 
     private void deleteNote(Note note) {
-        DatabaseOperations databaseOperations = new DatabaseOperations(activity, mContext);
-        NoteDAO noteDAO = databaseOperations.init();
+        DatabaseOperations databaseOperations = new DatabaseOperations(mContext);
         databaseOperations.deleteNote(note);
-
-        loadNotes(noteDAO);
-    }
-
-    private void loadNotes(NoteDAO noteDAO) {
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                noteList = noteDAO.getNotes();
-                activity.runOnUiThread(new Runnable() { // Only the original thread that created a view hierarchy can touch its views
-                    @Override
-                    public void run() {
-                        notifyDataSetChanged();
-                    }
-                });
-            }
-        };
-        thread.start();
     }
 
     private void hideKeyboard() {
@@ -156,4 +140,21 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
             deleteBtn = view.findViewById(R.id.delete_btn);
         }
     }
+
+    /*private void loadNotes(NoteDAO noteDAO) {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                noteList = noteDAO.getNotes();
+                activity.runOnUiThread(new Runnable() { // Only the original thread that created a view hierarchy can touch its views
+                    @Override
+                    public void run() {
+                        notifyDataSetChanged();
+                    }
+                });
+            }
+        };
+        thread.start();
+    }*/
+
 }

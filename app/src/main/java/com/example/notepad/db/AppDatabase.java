@@ -11,6 +11,7 @@ import com.example.notepad.Note;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+// Singleton class
 @Database(entities = {Note.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract NoteDAO getNoteDAO();

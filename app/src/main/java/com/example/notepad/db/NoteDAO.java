@@ -1,5 +1,6 @@
 package com.example.notepad.db;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -13,14 +14,14 @@ import java.util.List;
 @Dao
 public interface NoteDAO {
     @Insert
-    public void insert(Note... notes);
+    void insert(Note... notes);
 
     @Update
-    public void update(Note... notes);
+    void update(Note... notes);
 
     @Delete
-    public void delete(Note... notes);
+    void delete(Note... notes);
 
     @Query("SELECT * FROM Note")
-    public List<Note> getNotes();
+    LiveData<List<Note>> getAllNotes();
 }
