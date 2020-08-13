@@ -63,35 +63,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
             });
 
             holder.editBtn.setOnClickListener(v -> {
-                LayoutInflater inflater = activity.getLayoutInflater();
-                View makeNotePage = inflater.inflate(R.layout.make_note_page, mainLayout, false);
-                mainLayout.addView(makeNotePage);
-                fab.hide();
-
-                ImageButton cancelBtn = makeNotePage.findViewById(R.id.cancel_button);
-                ImageButton doneBtn = makeNotePage.findViewById(R.id.button);
-
-                EditText writtenTitle = makeNotePage.findViewById(R.id.title);
-                EditText writtenNote = makeNotePage.findViewById(R.id.note);
-                writtenTitle.setText(currentNote.getTitle());
-                writtenNote.setText(currentNote.getNote());
-
-                doneBtn.setOnClickListener(v2 -> {
-                    currentNote.setTitle(writtenTitle.getText().toString());
-                    currentNote.setNote(writtenNote.getText().toString());
-
-                    editNote(currentNote);
-
-                    mainLayout.removeView(makeNotePage);
-                    hideKeyboard();
-                    fab.show();
-                });
-
-                cancelBtn.setOnClickListener(v2 -> {
-                    mainLayout.removeView(makeNotePage);
-                    hideKeyboard();
-                    fab.show();
-                });
+                goEditingMode(currentNote);
             });
         }
     }
@@ -108,6 +80,33 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
         notifyDataSetChanged();
     }
 
+    private void goEditingMode(Note currentNote) {
+        LayoutInflater inflater = activity.getLayoutInflater();
+        View makeNotePage = inflater.inflate(R.layout.make_note_page, mainLayout, false);
+        mainLayout.addView(makeNotePage);
+        fab.hide();
+
+        EditText writtenTitle = makeNotePage.findViewById(R.id.title);
+        EditText writtenNote = makeNotePage.findViewById(R.id.note);
+        ImageButton cancelBtn = makeNotePage.findViewById(R.id.cancel_button);
+        ImageButton doneBtn = makeNotePage.findViewById(R.id.button);
+
+        writtenTitle.setText(currentNote.getTitle());
+        writtenNote.setText(currentNote.getNote());
+
+        doneBtn.setOnClickListener(v2 -> {
+            currentNote.setTitle(writtenTitle.getText().toString());
+            currentNote.setNote(writtenNote.getText().toString());
+
+            editNote(currentNote);
+            finishWriting(makeNotePage);
+        });
+
+        cancelBtn.setOnClickListener(v2 -> {
+            finishWriting(makeNotePage);
+        });
+    }
+
     private void editNote(Note note) {
         DatabaseOperations databaseOperations = new DatabaseOperations(mContext);
         databaseOperations.updateNote(note);
@@ -116,6 +115,12 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
     private void deleteNote(Note note) {
         DatabaseOperations databaseOperations = new DatabaseOperations(mContext);
         databaseOperations.deleteNote(note);
+    }
+
+    private void finishWriting (View makeNotePage) {
+        mainLayout.removeView(makeNotePage);
+        hideKeyboard();
+        fab.show();
     }
 
     private void hideKeyboard() {

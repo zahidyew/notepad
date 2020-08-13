@@ -53,7 +53,10 @@ public class MainActivity extends AppCompatActivity {
             addNewNote();
         });
 
+        observeChangesToDB();
+    }
 
+    private void observeChangesToDB() {
         // The onChanged() method fires when the observed data changes and the activity is in the foreground.
         databaseOperations.getAllMyNotes().observe(this, new Observer<List<Note>>() {
             @Override
@@ -82,17 +85,18 @@ public class MainActivity extends AppCompatActivity {
             item.setNote(writtenNote.getText().toString());
 
             databaseOperations.insertNewNote(item);
-
-            mainLayout.removeView(makeNotePage);
-            hideKeyboard();
-            floatingActionButton.show();
+            finishWriting(makeNotePage);
         });
 
         cancelBtn.setOnClickListener(v -> {
-            mainLayout.removeView(makeNotePage);
-            hideKeyboard();
-            floatingActionButton.show();
+            finishWriting(makeNotePage);
         });
+    }
+
+    private void finishWriting (View makeNotePage) {
+        mainLayout.removeView(makeNotePage);
+        hideKeyboard();
+        floatingActionButton.show();
     }
 
     private void hideKeyboard() {
