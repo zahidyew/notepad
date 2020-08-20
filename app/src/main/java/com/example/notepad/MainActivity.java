@@ -15,11 +15,13 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.notepad.db.DatabaseOperations;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -83,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
             Note item = new Note();
             item.setTitle(writtenTitle.getText().toString());
             item.setNote(writtenNote.getText().toString());
+            item.setDate(new Date());
+
+            Toast.makeText(this, "Date is : " + item.getDate(), Toast.LENGTH_SHORT).show();
 
             databaseOperations.insertNewNote(item);
             finishWriting(makeNotePage);
