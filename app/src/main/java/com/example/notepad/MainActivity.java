@@ -15,12 +15,18 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.example.notepad.db.DatabaseOperations;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private ConstraintLayout mainLayout;
@@ -79,10 +85,18 @@ public class MainActivity extends AppCompatActivity {
         EditText writtenTitle = makeNotePage.findViewById(R.id.title);
         EditText writtenNote = makeNotePage.findViewById(R.id.note);
 
+        String[] dateAndTime = getDateAndTime().split(","); // the return String is "dd/MM/yyyy,hh:mm a"
+        String date = dateAndTime[0];
+        String time = dateAndTime[1];
+
         doneBtn.setOnClickListener(v -> {
             Note item = new Note();
             item.setTitle(writtenTitle.getText().toString());
             item.setNote(writtenNote.getText().toString());
+            item.setDate(date);
+            item.setTime(time);
+
+            Toast.makeText(this, "Date is: " + item.getDate() + "\nTime is: " + item.getTime(), Toast.LENGTH_LONG).show();
 
             databaseOperations.insertNewNote(item);
             finishWriting(makeNotePage);
@@ -106,6 +120,18 @@ public class MainActivity extends AppCompatActivity {
             InputMethodManager imm = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    private String getDateAndTime() {
+        Instant instant = Instant.now();
+        ZoneId zoneId = ZoneId.of( "Asia/Singapore" );
+        ZonedDateTime zdt = ZonedDateTime.ofInstant( instant , zoneId );
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy,hh:mm a");
+        String output = zdt.format(formatter.withLocale(Locale.ENGLISH));
+        //String[] output = zdt.format(formatter.withLocale(Locale.ENGLISH)).split(",");
+
+        // the return String is "dd/MM/yyyy,hh:mm a", so we need to split it later
+        return output;
     }
 
     /*private void loadNotes() {

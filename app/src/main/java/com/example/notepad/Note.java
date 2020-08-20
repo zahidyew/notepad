@@ -8,7 +8,7 @@ public class Note {
 
     @PrimaryKey(autoGenerate = true) // set noteId as Primary key
     private int noteId;
-    private String title, note;
+    private String title, note, date, time;
 
     public int getNoteId() {
         return noteId;
@@ -22,6 +22,14 @@ public class Note {
         return note;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
     public void setNoteId(int noteId) {
         this.noteId = noteId;
     }
@@ -32,5 +40,13 @@ public class Note {
 
     public void setNote(String note) {
         this.note = note;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 }
