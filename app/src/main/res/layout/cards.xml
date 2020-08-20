@@ -32,20 +32,30 @@
                 android:layout_marginTop="13dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:paddingBottom="10dp"
-                android:textSize="18dp"
+                android:textSize="20dp"
                 android:hint="Title" />
+
+            <TextView
+                android:id="@+id/date_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/title"
+                android:hint="Date, time"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:textSize="10dp"/>
 
             <TextView
                 android:id="@+id/note"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/title"
+                android:layout_below="@+id/date_time"
                 android:hint="Write your note here"
                 android:layout_marginBottom="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
-                android:textSize="14dp"/>
+                android:textSize="15dp"/>
 
             <ImageButton
                 android:id="@+id/delete_btn"

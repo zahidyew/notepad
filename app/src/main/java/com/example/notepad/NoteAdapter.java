@@ -56,6 +56,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
             Note currentNote = noteList.get(position);
 
             holder.title.setText(currentNote.getTitle());
+            holder.dateTime.setText(currentNote.getDate() + ", " + currentNote.getTime());
             holder.note.setText(currentNote.getNote());
 
             holder.deleteBtn.setOnClickListener(v -> {
@@ -133,13 +134,14 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.MyViewHolder> 
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        public TextView title, note;
+        public TextView title, note, dateTime;
         public ImageButton editBtn, deleteBtn;
 
         public MyViewHolder(View view) {
             super(view);
 
             title = view.findViewById(R.id.title);
+            dateTime = view.findViewById(R.id.date_time);
             note = view.findViewById(R.id.note);
             editBtn = view.findViewById(R.id.edit_btn);
             deleteBtn = view.findViewById(R.id.delete_btn);
