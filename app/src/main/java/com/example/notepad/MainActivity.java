@@ -95,8 +95,6 @@ public class MainActivity extends AppCompatActivity {
             item.setDate(date);
             item.setTime(time);
 
-            //Toast.makeText(this, "Date is: " + item.getDate() + "\nTime is: " + item.getTime(), Toast.LENGTH_LONG).show();
-
             databaseOperations.insertNewNote(item);
             finishWriting(makeNotePage);
             Toast.makeText(this, "Done", Toast.LENGTH_SHORT).show();
